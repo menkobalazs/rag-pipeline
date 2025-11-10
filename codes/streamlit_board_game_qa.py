@@ -5,8 +5,6 @@ from ollama_server import start_server, stop_server
 st.set_page_config(page_title="Board Game Rules Q&A", layout="wide")
 st.title("Board Game Rules Question Answering")
 
-
-# User input
 question = st.text_area("Enter your question about board games:", height=120)
 
 if st.button("Get Answer"):
