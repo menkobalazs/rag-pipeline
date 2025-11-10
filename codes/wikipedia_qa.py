@@ -1,5 +1,5 @@
 import os
-import shutil
+import shutil # to remove downloaded data
 
 import wikipedia
 import wikipediaapi 
