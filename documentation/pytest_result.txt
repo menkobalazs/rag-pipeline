@@ -1,0 +1,87 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.12, pytest-9.0.0, pluggy-1.6.0
+rootdir: /home/menkobalazs/kpmg/codes
+plugins: langsmith-0.4.42, anyio-4.11.0
+collected 5 items
+
+test_board_game_qa.py 
+---
+Question: What types of wound exist in the Dead of Winter?
+
+Expected Response: There are two types of wounds: a normal wound and a frostbite wound.
+Actual Response: In the Dead of Winter, there are two types of wounds: regular wound tokens and frostbite wound tokens. Regular wound tokens represent physical injuries that a survivor can receive, while frostbite wound tokens are a specific type of wound that can also be inflicted on survivors.
+
+Source: 26-dead-of-winter-a-crossroads-game-rulebook.pdf
+
+(Answer with 'true' or 'false') Does the actual response match the expected response? Don't be strict — accept synonyms as well.
+
+Response: true
+.
+---
+Question: In Sushi Go Party game what does an egg nigiri worth?
+
+Expected Response: one point
+Actual Response: An egg nigiri is worth 1 point.
+
+Source: 92-sushi-go-party-rulebook.pdf
+
+(Answer with 'true' or 'false') Does the actual response match the expected response? Don't be strict — accept synonyms as well.
+
+Response: true
+.
+---
+Question: How can I instanly win in Kill the Unicorns game?
+
+Expected Response: Collect double rainbow
+Actual Response: I'm sorry, I cannot help to answer the question based on my dataset.
+
+(Answer with 'true' or 'false') Does the actual response match the expected response? Don't be strict — accept synonyms as well.
+
+Response: false. the expected response "collect double rainbow" is not an action that can be carried out in this context, whereas the actual response indicates it cannot help answer questions based on its dataset.
+F
+---
+Question: What is the starting temperature in Terraforming Mars game?
+
+Expected Response: 286 Kelvin
+Actual Response: The starting temperature in Terraforming Mars is -30˚C.
+
+Source: fb-terraforming-mars-rule.pdf
+
+(Answer with 'true' or 'false') Does the actual response match the expected response? Don't be strict — accept synonyms as well.
+
+Response: false
+.
+---
+Question: When was the first landing on the moon?
+
+Expected Response: Sorry, I cannot help to answer the question based on my dataset.
+Actual Response: I don't have any information about the first landing on the moon in this context. The provided text appears to be about the game "Settlers of Catan" and doesn't mention space travel or lunar landings.
+
+Source: None
+
+(Answer with 'true' or 'false') Does the actual response match the expected response? Don't be strict — accept synonyms as well.
+
+Response: true
+.
+
+=================================== FAILURES ===================================
+____________________________ test_kill_the_unicorns ____________________________
+
+    def test_kill_the_unicorns():
+>       assert query_and_validate(
+            question="How can I instanly win in Kill the Unicorns game?",
+            expected_response="Collect double rainbow",
+        )
+E       AssertionError: assert False
+E        +  where False = query_and_validate(question='How can I instanly win in Kill the Unicorns game?', expected_response='Collect double rainbow')
+
+test_board_game_qa.py:50: AssertionError
+=============================== warnings summary ===============================
+../qa-venv/lib/python3.12/site-packages/PyPDF2/__init__.py:21
+  /home/menkobalazs/kpmg/qa-venv/lib/python3.12/site-packages/PyPDF2/__init__.py:21: DeprecationWarning: PyPDF2 is deprecated. Please move to the pypdf library instead.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_board_game_qa.py::test_kill_the_unicorns - AssertionError: assert...
+============== 1 failed, 4 passed, 1 warning in 902.28s (0:15:02) ==============
