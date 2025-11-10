@@ -1,5 +1,6 @@
-__pycache__
+data/wiki_datasets
+data/chroma
 
-data/
 qa-venv/
-codes/test.ipynb
+
+codes/test.py
