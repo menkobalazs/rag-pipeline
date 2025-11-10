@@ -1,13 +1,13 @@
 import os
 
+from chromadb.utils import embedding_functions
+from PyPDF2 import PdfReader
+
 import chromadb
 import uuid 
 
 from sentence_transformers import SentenceTransformer, CrossEncoder
 from langchain_ollama import OllamaLLM
-
-from chromadb.utils import embedding_functions
-from PyPDF2 import PdfReader
 
 from ollama_server import start_server, stop_server
 
@@ -134,11 +134,8 @@ if __name__ == "__main__":
     ollama_process = start_server()
     try:
         user_input_question = "What types of wound exist in the Dead of Winter?" 
-        #user_input_question = "What are the main differences between Dead of Winter and 7 Wonders?"
         response = main(user_input_question)
         print("Model response:")
         print(response)
     finally:
         stop_server(ollama_process)
-
-### Streamlit interface ###

@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import wikipedia
 import wikipediaapi 
@@ -67,7 +68,7 @@ def fetch_wikipedia_articles(keywords, data_folder_root=DATA_PATH):
         with open(file_path, "w") as wikipage:
             wikipage.write(page_text)
     
-    print(f">>> Wikipedia pages saved to '{data_folder_path}'.")
+    print(f">>> Wikipedia pages will be saved to '{data_folder_path}'.")
     return wiki_texts, wiki_file_paths, data_folder_path
 
 
@@ -93,33 +94,38 @@ def create_chroma_collection(data_folder_path, wiki_texts):
 ##### -------------------------------------------------------------------------- #####
 ## --- A retriever-ranker layer to identify relevant context --- ##
 
-def retrieve_relevant_docs(collection, wiki_texts, question, top_k=5):
+def retrieve_relevant_docs(collection, question, n_results=5):
     """Retrieve and rank the most relevant document lines using embeddings + cross-encoder."""
     retriever_model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
-    documents = [line for doc in wiki_texts for line in doc if line.strip()]
-    embeddings = retriever_model.encode(documents, convert_to_numpy=True)
-
+    
     query_embedding = retriever_model.encode(question, convert_to_numpy=True)
 
     query_results = collection.query(
-        query_embeddings=[query_embedding.tolist()],
-        n_results=top_k
+        query_embeddings=query_embedding.tolist(),
+        n_results=n_results
     )
 
     retrieved_docs = query_results['documents'][0]
+    retrieved_sources = query_results["metadatas"][0]
 
-    candidates = [(question, doc) for doc in retrieved_docs]
+    # Rank documents using CrossEncoder
     ranker_model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+    candidates = [(question, doc) for doc in retrieved_docs]
     relevance_scores = ranker_model.predict(candidates)
 
-    ranked_results = sorted(zip(relevance_scores, retrieved_docs), reverse=True)
-    results = [doc for _, doc in ranked_results]
-    return results
+    ranked_results = sorted(
+        zip(relevance_scores, retrieved_docs, retrieved_sources),
+        key=lambda x: x[0],
+        reverse=True
+    )
+    
+    _, results, sources = zip(*ranked_results)
+    return results, sources
 
 ##### -------------------------------------------------------------------------- #####
 ## --- A pretrained LLM layer to generate the final answer --- ##
 
-def answer_question_with_llm(question, context_docs, model_name="llama3.2"):
+def answer_question_with_llm(question, context_docs, sources, model_name="llama3.2"):
     """Generate an answer to a question based on retrieved context."""
     model = OllamaLLM(model=model_name)
     response = model.invoke(f"""
@@ -133,8 +139,14 @@ The ranked relevant context is the following in a list:
 The question:
 {question}
 
+Your answer should end with a short note indicating the source(s) of the information.
+For example: "Source: something.pdf"
+
+The available source files for this context are:
+{sources}
+
 Your answer:
-""")
+""") ## TODO: Show real sources, not just LLM hallucinations
     return response
 
 ##### -------------------------------------------------------------------------- #####
@@ -143,21 +155,19 @@ def main(question):
     keywords = extract_keywords_from_question(question)
     wiki_texts, wiki_file_paths, data_folder_path = fetch_wikipedia_articles(keywords)
     collection = create_chroma_collection(data_folder_path, wiki_texts)
-    context_docs = retrieve_relevant_docs(collection, wiki_texts, question)
-    answer = answer_question_with_llm(question, context_docs)
+    context_docs, sources = retrieve_relevant_docs(collection, question)
+    answer = answer_question_with_llm(question, context_docs, sources)
+    #shutil.rmtree(DATA_PATH) # TODO: do not remove data until there are questions
     return answer, wiki_file_paths
 
 
 if __name__ == "__main__":
     ollama_process = start_server()
     try:
-        user_question = "What is KPMG, and what does it focus on? When does it sponsor Lenovo?"
+        user_question = "What is KPMG, and what does it focus on? How long have they been sponsoring Lenovo?" # Instead of BrainBar
         response, sources = main(user_question)
         print("Model response:")
         print(response)
-        print("\nSources:")
-        print(sources)
     finally:
         stop_server(ollama_process)
 
-### Streamlit interface ###
