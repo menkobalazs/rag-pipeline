@@ -1,11 +1,15 @@
 import os
+
 import wikipedia
 import wikipediaapi 
+
 import chromadb
 import uuid 
+
 from sentence_transformers import SentenceTransformer, CrossEncoder
 from langchain_ollama import OllamaLLM
 
+from ollama_server import start_server, stop_server
 
 ##### -------------------------------------------------------------------------- #####
 
@@ -145,12 +149,15 @@ def main(question):
 
 
 if __name__ == "__main__":
-    user_question = "What is KPMG, and what does it focus on? When does it sponsor Lenovo?"
-    response, sources = main(user_question)
-    print("Model response:")
-    print(response)
-    print("\nSources:")
-    print(sources)
-
+    ollama_process = start_server()
+    try:
+        user_question = "What is KPMG, and what does it focus on? When does it sponsor Lenovo?"
+        response, sources = main(user_question)
+        print("Model response:")
+        print(response)
+        print("\nSources:")
+        print(sources)
+    finally:
+        stop_server(ollama_process)
 
 ### Streamlit interface ###
