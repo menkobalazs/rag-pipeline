@@ -15,9 +15,12 @@ This project implements a Question & Answer (Q&A) pipeline based on the RAG appr
 The project is implemented in Python 3.12. It uses:
 
 - **Vector store:** [Chroma](https://www.trychroma.com/)  
-- **Pretrained LLM:** [Llama3.2 (3B)](https://ollama.com/library/llama3.2:3b) from [Ollama](https://ollama.com/)  
+- **Pretrained LLMs:** [Llama3.2 (3B)](https://ollama.com/library/llama3.2:3b) and [Mistral](https://ollama.com/library/mistral) from [Ollama](https://ollama.com/)  
 - **Interface:** [Streamlit](https://streamlit.io/)  
-- **Containerization:** [Docker](https://www.docker.com/)  
+- **Containerization:** [Docker](https://www.docker.com/) $^1$
+
+$^1$The containerization builds up correctly, but unfortunately, Docker does not find the pretrained models.
+
 
 The pipeline follows these main steps:
 
