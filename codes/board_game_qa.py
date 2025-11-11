@@ -13,8 +13,8 @@ from ollama_server import start_server, stop_server
 
 ##### -------------------------------------------------------------------------- #####
 
-DATA_PATH = "../data/board_game_rules/"
-CHROMA_PATH = "../data/chroma/"
+DATA_PATH = os.getenv("PDF_PATH", "/app/data/board_game_rules")
+CHROMA_PATH = os.getenv("CHROMA_PATH", "/app/data/chroma")
 
 ##### -------------------------------------------------------------------------- #####
 ## --- Create a vector store of the documents with all the fields necessary -- ###
